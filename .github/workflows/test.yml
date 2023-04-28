@@ -9,6 +9,7 @@ on:
 
 env:
     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    RECORD_DAY_RANGE: 90
 
 jobs:
     # unit tests
