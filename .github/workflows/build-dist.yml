@@ -1,0 +1,46 @@
+# `dist/index.js` is a special file in Actions.
+# When you reference an action with `uses:` in a workflow,
+# `index.js` is the code that will run.
+# For our project, we generate this file through a build process from other source files.
+# We need to make sure the checked-in `index.js` actually matches what we expect it to be.
+name: Build dist
+
+on:
+    push:
+        branches:
+            - develope
+
+jobs:
+    build-dist:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Set Node.js 16.x
+              uses: actions/setup-node@v3.6.0
+              with:
+                  node-version: 16.x
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build the dist/ directory
+              run: npm run prepare
+
+            - name: check for changes
+              run: |
+                  if git diff --exit-code; then
+                    echo "changes_exist=false" >> "$GITHUB_ENV"
+                  else
+                    echo "changes_exist=true" >> "$GITHUB_ENV"
+                  fi
+
+            - name: Commit and Push
+              if: ${{ env.changes_exist == 'true' }}
+              run: |
+                  git config --global user.name 'kevinhws'
+                  git config --global user.email 'kevinshu1995@gmail.com'
+                  git commit -am "[ci] (gh-action) build dist"
+                  git push
+
