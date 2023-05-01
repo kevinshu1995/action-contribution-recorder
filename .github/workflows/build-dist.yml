@@ -3,7 +3,7 @@
 # `index.js` is the code that will run.
 # For our project, we generate this file through a build process from other source files.
 # We need to make sure the checked-in `index.js` actually matches what we expect it to be.
-name: Check dist/
+name: Build dist
 
 on:
     push:
@@ -28,7 +28,16 @@ jobs:
             - name: Build the dist/ directory
               run: npm run prepare
 
-            - name: Commit changes
+            - name: check for changes
+              run: |
+                  if git diff --exit-code; then
+                    echo "changes_exist=false" >> "$GITHUB_ENV"
+                  else
+                    echo "changes_exist=true" >> "$GITHUB_ENV"
+                  fi
+
+            - name: Commit and Push
+              if: ${{ env.changes_exist == 'true' }}
               run: |
                   git config --global user.name 'kevinhws'
                   git config --global user.email 'kevinshu1995@gmail.com'
