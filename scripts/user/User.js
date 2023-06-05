@@ -5,7 +5,17 @@ class User {
         if (!info) {
             throw new Error("User info is required");
         }
-        this.info = info;
+        this.info = {
+            login: info.login || "",
+            id: info.id || 0,
+            node_id: info.node_id || "",
+            avatar_url: info.avatar_url || "",
+            gravatar_id: info.gravatar_id || "",
+            url: info.url || "",
+            html_url: info.html_url || "",
+            type: info.type || "",
+            site_admin: info.site_admin || false,
+        };
         this.score = {};
         this.totalScore = 0;
 
