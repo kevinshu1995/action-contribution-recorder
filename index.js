@@ -2,6 +2,7 @@ const core = require("@actions/core");
 const Stats = require("./scripts/stats/pulls/index.js");
 const Utils = require("./scripts/utils/index.js");
 const jsonToMdTable = require("json-to-markdown-table");
+const dayjs = require("dayjs");
 
 const rankJsonPath = "./rank.json";
 // leader board table readme path
@@ -69,7 +70,7 @@ async function run() {
 
         // write markdown
         const currentReadme = Utils.markdown.read(markdownPath);
-        const newReadme = Utils.markdown.insert(currentReadme, leaderBoardMd, "CONTRIBUTION-LEADER-BOARD-TABLE");
+        const newReadme = Utils.markdown.insert(currentReadme, leaderBoardMd + `\nUpdate Time: ${dayjs().format("YYYY.MM.DD HH:mm:ss")}`, "CONTRIBUTION-LEADER-BOARD-TABLE");
         if (newReadme !== currentReadme) {
             core.info("Writing to " + "./test.md");
             Utils.markdown.write(markdownPath, newReadme);
