@@ -1,4 +1,4 @@
-const Weight = require("./../score/weight/index.js");
+const Weight = require("../score/weight/index.js");
 
 class User {
     constructor(info = null) {

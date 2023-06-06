@@ -1,9 +1,9 @@
 const core = require("@actions/core");
-const Stats = require("./scripts/stats/pulls/index.js");
 const Utils = require("./scripts/utils/index.js");
 const jsonToMdTable = require("json-to-markdown-table");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
+const LeaderBoard = require("./scripts/leaderBoard/index.js");
 
 dayjs.extend(utc);
 
@@ -14,35 +14,12 @@ const markdownPath = "./test.md";
 // most @actions toolkit packages have async methods
 async function run() {
     try {
-        const stats = new Stats();
-        const scoreListObj = await stats.getScoreList();
-
-        // get old rank
-        const rank = Utils.json.read(rankJsonPath);
-        if (rank !== null) {
-            rank.r.forEach((id, i) => {
-                if (scoreListObj[id]) {
-                    scoreListObj[id].lastRank = i + 1;
-                }
-            });
-        }
-
-        // sort user by total score
-        const sortedList = Object.values(scoreListObj).sort((a, b) => b.totalScore - a.totalScore);
-
-        // store rank as json
-        const rankArray = sortedList.reduce(
-            (all, curr) => {
-                all.r.push(curr.info.id);
-                return all;
-            },
-            { r: [], updateTime: new Date().getTime() }
-        );
-        Utils.json.write(rankJsonPath, rankArray);
-
+        const leaderBoard = new LeaderBoard(rankJsonPath);
+        await leaderBoard.init();
         // get top 10
-        const top10 = sortedList.slice(0, 10);
+        const top10 = leaderBoard.getLeaders(10);
 
+        // TODO refactor
         // generate markdown string
         const leaderBoardMd = jsonToMdTable(
             top10.map((data, index) => {

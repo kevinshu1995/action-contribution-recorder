@@ -1,6 +1,6 @@
 const ReviewComments = require("./review-comments.js");
 const List = require("./list.js");
-const UserMap = require("./../../user/UserMap.js");
+const UserMap = require("../../user/UserMap.js");
 
 class Stats {
     constructor() {

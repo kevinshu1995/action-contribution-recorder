@@ -50,7 +50,7 @@ octokit.hook.wrap("request", async (request, options) => {
     }
 });
 
-const API = (() => {
+const Github = (() => {
     return {
         pulls: {
             // Get a pull request
@@ -161,5 +161,5 @@ const API = (() => {
     };
 })();
 
-module.exports = API;
+module.exports = Github;
 

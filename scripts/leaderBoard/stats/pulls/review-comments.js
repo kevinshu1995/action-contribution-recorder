@@ -1,4 +1,4 @@
-const API = require("../../github/api.js");
+const API = require("../../../api/github.js");
 
 class ReviewComments {
     constructor() {
