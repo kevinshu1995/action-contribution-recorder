@@ -11,45 +11,58 @@ dayjs.extend(utc);
 const rankJsonPath = "./rank.json";
 // leader board table readme path
 const markdownPath = "./test.md";
-const leaderBoardCounts = 10;
+const displayContributorCounts = 10;
+
+const stringTag = options => {
+    const attrs = options.attrs ?? {};
+    const attrsString = Object.keys(attrs)
+        .map(key => {
+            return `${key}="${attrs[key]}"`;
+        })
+        .join(" ");
+
+    if (options.content !== undefined) {
+        return `<${options.tag} ${attrsString}>${options.content}</${options.tag}>`;
+    }
+    return `<${options.tag} ${attrsString} />`;
+};
 
 // most @actions toolkit packages have async methods
 async function run() {
     try {
+        // Get leaderBoard
         const leaderBoard = new LeaderBoard(rankJsonPath);
         await leaderBoard.init();
         const lastUpdateTime = leaderBoard.Rank.lastUpdateTime;
-        // get top X
-        const topLeaderBoard = leaderBoard.getLeaders(leaderBoardCounts);
-
         if (lastUpdateTime === null) {
             core.info(`Because the ${rankJsonPath} file does not exist, it is not possible to compare past rankings, so everyone's last rank is displayed as '-'`);
         }
 
-        // TODO refactor
-        // generate markdown string
+        // Generate markdown string
         const leaderBoardMd = jsonToMdTable(
-            topLeaderBoard.map((data, index) => {
+            // get top X contributors
+            leaderBoard.getLeaders(displayContributorCounts).map((data, index) => {
                 const rank = index + 1;
                 const lastRank = (() => {
                     if (lastUpdateTime === null) return "-";
 
                     if (data?.lastRank) {
-                        const change = data.lastRank - rank;
-                        if (change === 0) {
-                            return "-";
+                        const rankChange = data.lastRank - rank;
+                        if (rankChange < 0) {
+                            return `${stringTag({ tag: "font", attrs: { color: "red" }, content: "⇩" })} ${rankChange * -1}`;
                         }
-                        if (change > 0) {
-                            return `<font color="green">⇧</font> ${change}`;
+                        if (rankChange > 0) {
+                            return `${stringTag({ tag: "font", attrs: { color: "green" }, content: "⇧" })} ${rankChange}`;
                         }
-                        return `<font color="red">⇩</font> ${change * -1}`;
+                        return "-";
                     }
 
                     return "New Contributor!";
                 })();
+                const name = `${stringTag({ tag: "img", attrs: { width: "30px", src: data.info.avatar_url, alt: data.info.login } })} [${data.info.login}](${data.info.html_url})`;
                 return {
                     Rank: rank,
-                    Name: `<img width="30px" src="${data.info.avatar_url}" alt="${data.info.login}"/> [${data.info.login}](${data.info.html_url})`,
+                    Name: name,
                     Score: data.totalScore,
                     "Last Rank": lastRank,
                 };
@@ -57,7 +70,7 @@ async function run() {
             ["Rank", "Name", "Score", "Last Rank"]
         );
 
-        // write markdown
+        // Write markdown
         const currentReadme = Utils.markdown.read(markdownPath);
         const newReadme = Utils.markdown.insert(currentReadme, leaderBoardMd + `\nUpdate Time: ${dayjs().utc().format("YYYY/MM/DD HH:mm:ss ZZ")}`, "CONTRIBUTION-LEADER-BOARD-TABLE");
         if (newReadme !== currentReadme) {
