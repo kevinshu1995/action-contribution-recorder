@@ -6,7 +6,7 @@ function read(path) {
         const rawData = fs.readFileSync(path);
         return JSON.parse(rawData);
     } catch (e) {
-        core.error(e.message);
+        core.error("[json.js read] " + e.message);
         return null;
     }
 }
