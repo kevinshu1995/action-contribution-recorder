@@ -30,6 +30,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
             - uses: ./
 
             - name: check for changes
@@ -44,9 +47,17 @@ jobs:
               if: ${{ env.changes_exist == 'true' }}
               run: |
                   git config --global user.name 'contribution-recorder-bot'
-                  git commit -am "[feat] update contributor leader board"
-            - name: Push changes
+                  git commit -am "feat:🎸 update contributor leader board"
+
+            - name: Push changes while pull_request
               uses: ad-m/github-push-action@master
+              if: ${{ env.changes_exist == 'true' && github.event_name == 'pull_request' }}
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  branch: ${{ github.head_ref }}
+            - name: Push changes while pushing
+              uses: ad-m/github-push-action@master
+              if: ${{ env.changes_exist == 'true' && github.event_name == 'push' }}
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   branch: ${{ github.ref }}

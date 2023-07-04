@@ -41,7 +41,7 @@ jobs:
               run: |
                   git config --global user.name 'kevinhws'
                   git config --global user.email 'kevinshu1995@gmail.com'
-                  git commit -am "[ci] (gh-action) build dist"
+                  git commit -am "ci:🎡 (gh-action) build dist"
             - name: Push changes
               uses: ad-m/github-push-action@master
               with:
