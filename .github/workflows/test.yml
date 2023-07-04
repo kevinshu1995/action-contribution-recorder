@@ -30,6 +30,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/develope'
         uses: ./.github/workflows/build-dist.yml
     test:
+        needs: call-build-test
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
