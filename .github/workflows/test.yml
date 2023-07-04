@@ -9,7 +9,12 @@ on:
 
 env:
     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    RECORD_DAY_RANGE: 90
+    RECORD_DAY_RANGE: 300
+    GITHUB_REPOSITORY: kevinshu1995/action-contribution-recorder
+    RANK_JSON_PATH: ./contributor-leader-board.json
+    MARKDOWN_PATH: ./test.md
+    DISPLAY_CONTRIBUTOR_COUNTS: 10
+    MARKDOWN_INSERT_KEY: CONTRIBUTION-LEADER-BOARD-TABLE
 
 jobs:
     # unit tests
