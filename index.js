@@ -4,15 +4,11 @@ const jsonToMdTable = require("json-to-markdown-table");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const LeaderBoard = require("./scripts/leaderBoard/index.js");
+require("dotenv").config();
 
 dayjs.extend(utc);
 
-// TODO make it configurable
-const rankJsonPath = "./rank.json";
-// leader board table readme path
-const markdownPath = "./test.md";
-const displayContributorCounts = 10;
-const markdownInsertKey = "CONTRIBUTION-LEADER-BOARD-TABLE";
+const { RANK_JSON_PATH = "./contributor-leader-board.json", MARKDOWN_PATH = "./README.md", DISPLAY_CONTRIBUTOR_COUNTS = 10, MARKDOWN_INSERT_KEY = "CONTRIBUTION-LEADER-BOARD-TABLE" } = process.env;
 
 // utility function
 const stringTag = options => {
@@ -30,11 +26,11 @@ const stringTag = options => {
 };
 
 async function getLeaderBoard() {
-    const leaderBoard = new LeaderBoard(rankJsonPath);
+    const leaderBoard = new LeaderBoard(RANK_JSON_PATH);
     await leaderBoard.init();
     const lastUpdateTime = leaderBoard.Rank.lastUpdateTime;
     if (lastUpdateTime === null) {
-        core.info(`Because the ${rankJsonPath} file does not exist, it is not possible to compare past rankings, so everyone's last rank is displayed as '-'`);
+        core.info(`Because the ${RANK_JSON_PATH} file does not exist, it is not possible to compare past rankings, so everyone's last rank is displayed as '-'`);
     }
 
     return {
@@ -46,7 +42,7 @@ async function getLeaderBoard() {
 function generateMDTable({ leaderBoard, lastUpdateTime }) {
     const leaderBoardMd = jsonToMdTable(
         // get top X contributors
-        leaderBoard.getLeaders(displayContributorCounts).map((data, index) => {
+        leaderBoard.getLeaders(DISPLAY_CONTRIBUTOR_COUNTS).map((data, index) => {
             const rank = index + 1;
             const lastRank = (() => {
                 if (lastUpdateTime === null) return "-";
@@ -79,11 +75,11 @@ function generateMDTable({ leaderBoard, lastUpdateTime }) {
 }
 
 function writeMD({ leaderBoardMd }) {
-    const currentReadme = Utils.markdown.read(markdownPath);
-    const newReadme = Utils.markdown.insert(currentReadme, leaderBoardMd + `\nUpdate Time: ${dayjs().utc().format("YYYY/MM/DD HH:mm:ss ZZ")}`, markdownInsertKey);
+    const currentReadme = Utils.markdown.read(MARKDOWN_PATH);
+    const newReadme = Utils.markdown.insert(currentReadme, leaderBoardMd + `\nUpdate Time: ${dayjs().utc().format("YYYY/MM/DD HH:mm:ss ZZ")}`, MARKDOWN_INSERT_KEY);
     if (newReadme !== currentReadme) {
-        core.info("Writing to " + markdownPath);
-        Utils.markdown.write(markdownPath, newReadme);
+        core.info("Writing to " + MARKDOWN_PATH);
+        Utils.markdown.write(MARKDOWN_PATH, newReadme);
     } else {
         core.info("No need to update readme");
     }
