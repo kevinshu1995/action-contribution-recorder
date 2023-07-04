@@ -26,6 +26,9 @@ jobs:
             - run: npm test
 
     # test action works running from the graph
+    call-build-test:
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develope'
+        uses: ./.github/workflows/build-dist.yml
     test:
         runs-on: ubuntu-latest
         steps:

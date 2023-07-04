@@ -6,9 +6,10 @@
 name: Build dist
 
 on:
-    push:
-        branches:
-            - develope
+    # push:
+    #     branches:
+    #         - develope
+    workflow_call:
 
 jobs:
     build-dist:
