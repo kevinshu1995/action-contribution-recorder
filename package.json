@@ -1,36 +1,42 @@
 {
-  "name": "javascript-action",
-  "version": "1.0.0",
-  "description": "JavaScript Action Template",
-  "main": "index.js",
-  "scripts": {
-    "lint": "eslint .",
-    "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
-    "test": "jest",
-    "all": "npm run lint && npm run prepare && npm run test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/actions/javascript-action.git"
-  },
-  "keywords": [
-    "GitHub",
-    "Actions",
-    "JavaScript"
-  ],
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/actions/javascript-action/issues"
-  },
-  "homepage": "https://github.com/actions/javascript-action#readme",
-  "dependencies": {
-    "@actions/core": "^1.10.0"
-  },
-  "devDependencies": {
-    "@vercel/ncc": "^0.36.1",
-    "dotenv": "^16.0.3",
-    "eslint": "^8.37.0",
-    "jest": "^29.5.0"
-  }
+    "name": "action-contribution-recorder",
+    "version": "0.0.1",
+    "description": "This GitHub Action automatically generates a leaderboard based on contributors' activity and displays it in your README, recognizing and attracting contributors to your project.",
+    "main": "index.js",
+    "scripts": {
+        "lint": "eslint .",
+        "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
+        "test": "jest",
+        "all": "npm run lint && npm run prepare && npm run test",
+        "dev": "ncc run index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/actions/action-contribution-recorder.git"
+    },
+    "keywords": [
+        "GitHub",
+        "Actions",
+        "JavaScript",
+        "Contribution"
+    ],
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/actions/action-contribution-recorder/issues"
+    },
+    "homepage": "https://github.com/actions/action-contribution-recorder#readme",
+    "dependencies": {
+        "@actions/core": "^1.10.0",
+        "@actions/github": "^5.1.1",
+        "dayjs": "^1.11.7"
+    },
+    "devDependencies": {
+        "@vercel/ncc": "^0.36.1",
+        "dotenv": "^16.0.3",
+        "eslint": "^8.37.0",
+        "jest": "^29.5.0",
+        "json-to-markdown-table": "^1.0.0"
+    }
 }
+

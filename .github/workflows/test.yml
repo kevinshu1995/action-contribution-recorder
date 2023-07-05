@@ -9,7 +9,12 @@ on:
 
 env:
     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    RECORD_DAY_RANGE: 90
+    RECORD_DAY_RANGE: 300
+    GITHUB_REPOSITORY: kevinshu1995/action-contribution-recorder
+    RANK_JSON_PATH: ./contributor-leader-board.json
+    MARKDOWN_PATH: ./README.md
+    DISPLAY_CONTRIBUTOR_COUNTS: 10
+    MARKDOWN_INSERT_KEY: CONTRIBUTION-LEADER-BOARD-TABLE
 
 jobs:
     # unit tests
@@ -21,9 +26,43 @@ jobs:
             - run: npm test
 
     # test action works running from the graph
+    call-build-test:
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develope'
+        uses: ./.github/workflows/build-dist.yml
     test:
+        needs: call-build-test
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
             - uses: ./
+
+            - name: check for changes
+              run: |
+                  if git diff --exit-code; then
+                    echo "changes_exist=false" >> "$GITHUB_ENV"
+                  else
+                    echo "changes_exist=true" >> "$GITHUB_ENV"
+                  fi
+
+            - name: Commit
+              if: ${{ env.changes_exist == 'true' }}
+              run: |
+                  git config --global user.name 'contribution-recorder-bot'
+                  git commit -am "feat:🎸 update contributor leader board"
+
+            - name: Push changes while pull_request
+              uses: ad-m/github-push-action@master
+              if: ${{ env.changes_exist == 'true' && github.event_name == 'pull_request' }}
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  branch: ${{ github.head_ref }}
+            - name: Push changes while pushing
+              uses: ad-m/github-push-action@master
+              if: ${{ env.changes_exist == 'true' && github.event_name == 'push' }}
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  branch: ${{ github.ref }}
 
