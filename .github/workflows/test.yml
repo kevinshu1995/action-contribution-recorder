@@ -8,13 +8,13 @@ on:
             - "releases/*"
 
 env:
-    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    RECORD_DAY_RANGE: 300
-    GITHUB_REPOSITORY: kevinshu1995/action-contribution-recorder
-    RANK_JSON_PATH: ./contributor-leader-board.json
-    MARKDOWN_PATH: ./README.md
-    DISPLAY_CONTRIBUTOR_COUNTS: 10
-    MARKDOWN_INSERT_KEY: CONTRIBUTION-LEADER-BOARD-TABLE
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    GITHUB_REPOSITORY: ${{ github.repository }}
+    RECORD_DAY_RANGE: "300" #TODO remove
+    RANK_JSON_PATH: ./contributor-leader-board.json #option
+    MARKDOWN_PATH: ./README.md #option
+    DISPLAY_CONTRIBUTOR_COUNTS: "10" #option
+    MARKDOWN_INSERT_KEY: CONTRIBUTION-LEADER-BOARD-TABLE #option
 
 jobs:
     # unit tests
@@ -29,44 +29,30 @@ jobs:
     call-build-test:
         if: github.event_name == 'push' && github.ref == 'refs/heads/develope'
         uses: ./.github/workflows/build-dist.yml
+
+    # run scripts
     test:
         needs: call-build-test
         runs-on: ubuntu-latest
+        if: ${{  github.event_name == 'push' &&  github.ref == 'refs/heads/develope' }}
         steps:
             - uses: actions/checkout@v3
               with:
                   fetch-depth: 0
 
             - uses: ./
-
-            - name: check for changes
-              run: |
-                  if git diff --exit-code; then
-                    echo "changes_exist=false" >> "$GITHUB_ENV"
-                  else
-                    echo "changes_exist=true" >> "$GITHUB_ENV"
-                  fi
-
-            - name: Commit
-              if: ${{ env.changes_exist == 'true' }}
-              run: |
-                  git config --global user.name 'contribution-recorder-bot'
-                  git commit -am "feat:🎸 update contributor leader board"
-
-            - name: Push changes while pull_request
-              uses: ad-m/github-push-action@master
-              if: ${{ env.changes_exist == 'true' && github.event_name == 'pull_request' }}
+              name: run scripts for testing
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  branch: ${{ github.head_ref }}
-            - name: Push changes while pushing
-              uses: ad-m/github-push-action@master
-              if: ${{ env.changes_exist == 'true' && github.event_name == 'push' }}
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  branch: ${{ github.ref }}
+                  branch: develope
+                  GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }} # required
+                  GITHUB_REPOSITORY: ${{ env.GITHUB_REPOSITORY }} # required
+                  RANK_JSON_PATH: ${{ env.RANK_JSON_PATH }} #option
+                  MARKDOWN_PATH: ${{ env.MARKDOWN_PATH }} #option
+                  DISPLAY_CONTRIBUTOR_COUNTS: ${{ env.DISPLAY_CONTRIBUTOR_COUNTS }} #option
+                  MARKDOWN_INSERT_KEY: ${{ env.MARKDOWN_INSERT_KEY }} #option
+
     auto-tag:
-        needs: [units, call-build-test, test]
+        needs: [units]
         if: ${{ success() && github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main' && github.head_ref == 'develope' }}
         runs-on: ubuntu-latest
         steps:
