@@ -43,4 +43,9 @@ jobs:
                   DISPLAY_CONTRIBUTOR_COUNTS: ${{ env.DISPLAY_CONTRIBUTOR_COUNTS }} #option
                   MARKDOWN_INSERT_KEY: ${{ env.MARKDOWN_INSERT_KEY }} #option
 
+    # test action works running from the graph
+    call-build-test:
+        needs: [units, test]
+        if: ${{ success() }}
+        uses: ./.github/workflows/build-dist.yml
 
