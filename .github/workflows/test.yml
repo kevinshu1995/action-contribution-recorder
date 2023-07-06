@@ -53,7 +53,11 @@ jobs:
 
     auto-tag:
         needs: [units]
-        if: ${{ jobs.units.result == 'success' && github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main' && github.head_ref == 'develope' }}
+        if: |
+            needs.units.result == 'success' &&
+            github.event_name == 'pull_request' && 
+            github.event.pull_request.merged == true &&
+            github.base_ref == 'main' && github.head_ref == 'develope'
         runs-on: ubuntu-latest
         steps:
             - uses: ./.github/workflows/auto-tag.yml
