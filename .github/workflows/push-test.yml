@@ -1,5 +1,8 @@
 name: "push-test"
 on:
+    pull_request:
+        types: [opened, reopened]
+        branches: [main]
     push:
         branches:
             - develope
@@ -42,10 +45,4 @@ jobs:
                   MARKDOWN_PATH: ${{ env.MARKDOWN_PATH }} #option
                   DISPLAY_CONTRIBUTOR_COUNTS: ${{ env.DISPLAY_CONTRIBUTOR_COUNTS }} #option
                   MARKDOWN_INSERT_KEY: ${{ env.MARKDOWN_INSERT_KEY }} #option
-
-    # test action works running from the graph
-    call-build-test:
-        needs: [units, test]
-        if: ${{ success() }}
-        uses: ./.github/workflows/build-dist.yml
 
