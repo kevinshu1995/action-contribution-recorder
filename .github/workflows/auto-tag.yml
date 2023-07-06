@@ -1,11 +1,6 @@
 name: Bump version tag on main
 on:
-    workflow_dispatch:
-    # pull_request:
-    #     types:
-    #         - closed
-    #     branches:
-    #         - main
+    workflow_call:
 
 jobs:
     build:
