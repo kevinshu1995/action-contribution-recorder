@@ -27,9 +27,9 @@ TODO
 <!--CONTRIBUTION-LEADER-BOARD-TABLE:START-->
 |Rank|Name|Score|Last Rank|
 |----|----|----|----|
-|1|<img width="30px" src="https://avatars.githubusercontent.com/u/56685204?v=4" alt="kevinshu1995" /> [kevinshu1995](https://github.com/kevinshu1995)|21|-|
+|1|<img width="30px" src="https://avatars.githubusercontent.com/u/56685204?v=4" alt="kevinshu1995" /> [kevinshu1995](https://github.com/kevinshu1995)|23|-|
 |2|<img width="30px" src="https://avatars.githubusercontent.com/u/135589566?v=4" alt="hws-tw" /> [hws-tw](https://github.com/hws-tw)|1|-|
 
-Update Time: 2023/07/06 04:17:29 +0000
+Update Time: 2023/07/06 06:28:09 +0000
 <!--CONTRIBUTION-LEADER-BOARD-TABLE:END-->
 
