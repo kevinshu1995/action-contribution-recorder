@@ -1,0 +1,50 @@
+name: "run-scripts"
+on:
+    workflow_dispatch:
+        inputs:
+            GITHUB_TOKEN:
+                description: "GITHUB_TOKEN"
+                required: true
+            GITHUB_REPOSITORY:
+                description: "GITHUB_REPOSITORY"
+                required: true
+            branch:
+                description: "Branch name"
+                required: true
+            RANK_JSON_PATH:
+                description: "json file path"
+                required: false
+                default: "./contributor-leader-board.json"
+            MARKDOWN_PATH:
+                description: "markdown file path"
+                required: false
+                default: "./README.md"
+            DISPLAY_CONTRIBUTOR_COUNTS:
+                description: "display contributor counts"
+                required: false
+                default: "10"
+            MARKDOWN_INSERT_KEY:
+                description: "markdown insert key"
+                required: false
+                default: "CONTRIBUTION-LEADER-BOARD-TABLE"
+
+jobs:
+    run-scripts:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
+            - uses: ./
+              name: run scripts for testing
+              with:
+                  branch: ${{ inputs.branch }}
+                  GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }} # required
+                  GITHUB_REPOSITORY: ${{ inputs.GITHUB_REPOSITORY }} # required
+                  RANK_JSON_PATH: ${{ inputs.RANK_JSON_PATH }} #option
+                  MARKDOWN_PATH: ${{ inputs.MARKDOWN_PATH }} #option
+                  DISPLAY_CONTRIBUTOR_COUNTS: ${{ inputs.DISPLAY_CONTRIBUTOR_COUNTS }} #option
+                  MARKDOWN_INSERT_KEY: ${{ inputs.MARKDOWN_INSERT_KEY }} #option
+
+
