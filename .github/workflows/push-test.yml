@@ -38,7 +38,7 @@ jobs:
             - uses: ./
               name: run scripts for testing
               with:
-                  branch: develope
+                  BRANCH: develope
                   GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }} # required
                   GITHUB_REPOSITORY: ${{ env.GITHUB_REPOSITORY }} # required
                   RANK_JSON_PATH: ${{ env.RANK_JSON_PATH }} #option

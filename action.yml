@@ -23,7 +23,7 @@ inputs:
         description: "markdown insert key"
         required: false
         default: "CONTRIBUTION-LEADER-BOARD-TABLE"
-    branch:
+    BRANCH:
         description: "Branch name"
         required: true
 
@@ -33,7 +33,7 @@ runs:
         - uses: actions/checkout@v3
           with:
               fetch-depth: 0
-              ref: ${{ inputs.branch }}
+              ref: ${{ inputs.BRANCH }}
 
         - uses: actions/setup-node@v2
           with:
@@ -73,5 +73,5 @@ runs:
           if: ${{ env.changes_exist == 'true' }}
           with:
               github_token: ${{ inputs.GITHUB_TOKEN }}
-              branch: ${{ inputs.branch }}
+              branch: ${{ inputs.BRANCH }}
 
