@@ -1,11 +1,6 @@
 name: Bump version tag on main
 on:
-    workflow_dispatch:
-    # pull_request:
-    #     types:
-    #         - closed
-    #     branches:
-    #         - main
+    workflow_call:
 
 jobs:
     build:
@@ -25,4 +20,10 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   WITH_V: true
                   DEFAULT_BUMP: none
+
+    skip:
+        runs-on: ubuntu-latest
+        if: github.event.pull_request.merged == false
+        steps:
+            - run: echo "Skipping tag creation because PR was not merged"
 

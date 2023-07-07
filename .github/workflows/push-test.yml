@@ -1,6 +1,8 @@
-name: "units-test"
+name: "push-test"
 on:
     pull_request:
+        types: [opened, reopened]
+        branches: [main]
     push:
         branches:
             - develope
@@ -23,16 +25,11 @@ jobs:
             - run: npm ci
             - run: npm test
 
-    # test action works running from the graph
-    call-build-test:
-        if: github.event_name == 'push' && github.ref == 'refs/heads/develope'
-        uses: ./.github/workflows/build-dist.yml
-
     # run scripts
     test:
-        needs: call-build-test
+        needs: units
+        if: ${{ success() && github.event_name == 'push' }}
         runs-on: ubuntu-latest
-        if: ${{  github.event_name == 'push' &&  github.ref == 'refs/heads/develope' }}
         steps:
             - uses: actions/checkout@v3
               with:
