@@ -52,10 +52,14 @@ jobs:
                   git config --global user.email 'kevinshu1995@gmail.com'
                   git commit -am "ci:🎡 (gh-action) build dist"
             - name: Push changes
+              if: ${{ env.changes_exist == 'true' }}
               uses: ad-m/github-push-action@master
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   branch: develope
+            - name: Message
+              run: |
+                  echo "changes_exist value: ${{ env.changes_exist }}"
 
     on-failure:
         runs-on: ubuntu-latest
