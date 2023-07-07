@@ -4,15 +4,9 @@ on:
 
 jobs:
     build:
-        if: github.event.pull_request.merged == true
         runs-on: ubuntu-latest
-        permissions:
-            contents: write
         steps:
             - uses: actions/checkout@v3
-              with:
-                  ref: ${{ github.event.pull_request.merge_commit_sha }}
-                  fetch-depth: "0"
 
             - name: Bump version and push tag
               uses: butlerlogic/action-autotag@1.0.0
@@ -22,10 +16,4 @@ jobs:
                   strategy: package
                   root: "."
                   tag_prefix: "v"
-
-    skip:
-        runs-on: ubuntu-latest
-        if: github.event.pull_request.merged == false
-        steps:
-            - run: echo "Skipping tag creation because PR was not merged"
 
