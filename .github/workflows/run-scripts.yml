@@ -1,29 +1,36 @@
 name: "run-scripts"
 on:
-    workflow_dispatch:
+    workflow_call:
         inputs:
             GITHUB_TOKEN:
+                type: string
                 description: "GITHUB_TOKEN"
                 required: true
             GITHUB_REPOSITORY:
+                type: string
                 description: "GITHUB_REPOSITORY"
                 required: true
             BRANCH:
+                type: string
                 description: "Branch name"
                 required: true
             RANK_JSON_PATH:
+                type: string
                 description: "json file path"
                 required: false
                 default: "./contributor-leader-board.json"
             MARKDOWN_PATH:
+                type: string
                 description: "markdown file path"
                 required: false
                 default: "./README.md"
             DISPLAY_CONTRIBUTOR_COUNTS:
+                type: string
                 description: "display contributor counts"
                 required: false
                 default: "10"
             MARKDOWN_INSERT_KEY:
+                type: string
                 description: "markdown insert key"
                 required: false
                 default: "CONTRIBUTION-LEADER-BOARD-TABLE"
