@@ -8,13 +8,14 @@ on:
             - develope
 
 env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    GITHUB_REPOSITORY: ${{ github.repository }}
-    RECORD_DAY_RANGE: "300" #TODO remove
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    GH_REPOSITORY: ${{ github.repository }}
     RANK_JSON_PATH: ./contributor-leader-board.json #option
     MARKDOWN_PATH: ./README.md #option
     DISPLAY_CONTRIBUTOR_COUNTS: "10" #option
     MARKDOWN_INSERT_KEY: CONTRIBUTION-LEADER-BOARD-TABLE #option
+
+permissions: write-all
 
 jobs:
     # unit tests
@@ -26,7 +27,7 @@ jobs:
             - run: npm test
 
     # run scripts
-    test:
+    build:
         needs: units
         if: ${{ success() && github.event_name == 'push' }}
         runs-on: ubuntu-latest
@@ -35,15 +36,63 @@ jobs:
               with:
                   fetch-depth: 0
 
+            - name: Set Node.js 16.x
+              uses: actions/setup-node@v3.6.0
+              with:
+                  node-version: 16.x
+
+            - name: Pull
+              run: |
+                  git pull --rebase
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build the dist/ directory
+              run: npm run prepare
+
+            - name: check for changes
+              run: |
+                  if git diff --exit-code; then
+                    echo "changes_exist=false" >> "$GITHUB_ENV"
+                  else
+                    echo "changes_exist=true" >> "$GITHUB_ENV"
+                  fi
+
+            - name: Commit
+              if: ${{ env.changes_exist == 'true' }}
+              run: |
+                  git config --global user.name 'kevinhws'
+                  git config --global user.email 'kevinshu1995@gmail.com'
+                  git commit -am "ci:🎡 (gh-action) build dist"
+            - name: Push changes
+              if: ${{ env.changes_exist == 'true' }}
+              uses: ad-m/github-push-action@master
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  branch: develope
+            - name: Message
+              run: |
+                  echo "changes_exist value: ${{ env.changes_exist }}"
+
+    test:
+        needs: [units, build]
+        if: ${{ success() && github.event_name == 'push' }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  ref: refs/heads/develope
+
             - uses: ./
               name: run scripts for testing
               with:
-                  BRANCH: develope
-                  GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }} # required
-                  GITHUB_REPOSITORY: ${{ env.GITHUB_REPOSITORY }} # required
-                  RANK_JSON_PATH: ${{ env.RANK_JSON_PATH }} #option
-                  MARKDOWN_PATH: ${{ env.MARKDOWN_PATH }} #option
-                  DISPLAY_CONTRIBUTOR_COUNTS: ${{ env.DISPLAY_CONTRIBUTOR_COUNTS }} #option
-                  MARKDOWN_INSERT_KEY: ${{ env.MARKDOWN_INSERT_KEY }} #option
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_REPOSITORY: ${{ github.repository }}
+                  RANK_JSON_PATH: ./contributor-leader-board.json #option
+                  MARKDOWN_PATH: ./README.md #option
+                  DISPLAY_CONTRIBUTOR_COUNTS: "10" #option
+                  MARKDOWN_INSERT_KEY: CONTRIBUTION-LEADER-BOARD-TABLE #option
 
 

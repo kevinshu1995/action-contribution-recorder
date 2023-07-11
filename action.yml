@@ -1,12 +1,28 @@
 name: "Action-contribution-recorder"
 description: "This GitHub Action automatically generates a leader board based on contributors' activity and displays it in your README, recognizing and attracting contributors to your project."
 inputs:
-    GITHUB_TOKEN:
+    GH_TOKEN:
         description: "GITHUB_TOKEN"
         required: true
-    GITHUB_REPOSITORY:
+    GH_REPOSITORY:
         description: "GITHUB_REPOSITORY"
+        required: false
+        default: ${{ github.repository }}
+    BRANCH:
+        description: "Branch name"
         required: true
+    COMMITTER_USERNAME:
+        description: "committer username"
+        default: "contribution-recorder-bot"
+        required: false
+    COMMITTER_EMAIL:
+        description: "committer email"
+        default: ""
+        required: false
+    COMMIT_MESSAGE:
+        description: "commit message"
+        default: "feat:🎸 update contributor leader board"
+        required: false
     RANK_JSON_PATH:
         description: "json file path"
         required: false
@@ -23,55 +39,8 @@ inputs:
         description: "markdown insert key"
         required: false
         default: "CONTRIBUTION-LEADER-BOARD-TABLE"
-    BRANCH:
-        description: "Branch name"
-        required: true
 
 runs:
-    using: "composite"
-    steps:
-        - uses: actions/checkout@v3
-          with:
-              fetch-depth: 0
-              ref: ${{ inputs.BRANCH }}
-
-        - uses: actions/setup-node@v2
-          with:
-              node-version: 16
-
-        - name: Run main javascript
-          env:
-              RECORD_DAY_RANGE: "300" #TODO remove
-              GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
-              GITHUB_REPOSITORY: ${{ inputs.GITHUB_REPOSITORY }}
-              RANK_JSON_PATH: ${{ inputs.RANK_JSON_PATH }}
-              MARKDOWN_PATH: ${{ inputs.MARKDOWN_PATH }}
-              DISPLAY_CONTRIBUTOR_COUNTS: ${{ inputs.DISPLAY_CONTRIBUTOR_COUNTS }}
-              MARKDOWN_INSERT_KEY: ${{ inputs.MARKDOWN_INSERT_KEY }}
-          working-directory: ./
-          shell: bash
-          run: node dist/index.js
-
-        - name: check for changes
-          shell: bash
-          run: |
-              if git diff --exit-code; then
-                echo "changes_exist=false" >> "$GITHUB_ENV"
-              else
-                echo "changes_exist=true" >> "$GITHUB_ENV"
-              fi
-
-        - name: Commit
-          shell: bash
-          if: ${{ env.changes_exist == 'true' }}
-          run: |
-              git config --global user.name 'contribution-recorder-bot'
-              git commit -am "feat:🎸 update contributor leader board"
-
-        - name: Push changes
-          uses: ad-m/github-push-action@master
-          if: ${{ env.changes_exist == 'true' }}
-          with:
-              github_token: ${{ inputs.GITHUB_TOKEN }}
-              branch: ${{ inputs.BRANCH }}
+    using: node16
+    main: dist/index.js
 
