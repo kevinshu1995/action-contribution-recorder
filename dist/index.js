@@ -27922,7 +27922,7 @@ const exec = (cmd, args = [], options = {}) => {
 };
 
 function isGitDirty() {
-    const command = `git diff HEAD^ HEAD --name-only`;
+    const command = `git status --porcelain`;
     const diffOutput = execSync(command).toString();
     return diffOutput !== "";
 }
@@ -27994,7 +27994,7 @@ function read(path) {
         const rawData = fs.readFileSync(path);
         return JSON.parse(rawData);
     } catch (e) {
-        core.error("[json.js read] " + e.message);
+        core.info("[json.js read] " + e.message);
         return null;
     }
 }

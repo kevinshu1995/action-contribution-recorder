@@ -29,7 +29,7 @@ const exec = (cmd, args = [], options = {}) => {
 };
 
 function isGitDirty() {
-    const command = `git diff HEAD^ HEAD --name-only`;
+    const command = `git status --porcelain`;
     const diffOutput = execSync(command).toString();
     return diffOutput !== "";
 }
