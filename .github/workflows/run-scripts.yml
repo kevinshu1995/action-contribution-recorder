@@ -2,11 +2,11 @@ name: "run-scripts"
 on:
     workflow_call:
         inputs:
-            GITHUB_TOKEN:
+            GH_TOKEN:
                 type: string
                 description: "GITHUB_TOKEN"
                 required: true
-            GITHUB_REPOSITORY:
+            GH_REPOSITORY:
                 type: string
                 description: "GITHUB_REPOSITORY"
                 required: true
@@ -47,8 +47,8 @@ jobs:
               name: run scripts for testing
               with:
                   BRANCH: ${{ inputs.BRANCH }}
-                  GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }} # required
-                  GITHUB_REPOSITORY: ${{ inputs.GITHUB_REPOSITORY }} # required
+                  GH_TOKEN: ${{ inputs.GH_TOKEN }} # required
+                  GH_REPOSITORY: ${{ inputs.GH_REPOSITORY }} # required
                   RANK_JSON_PATH: ${{ inputs.RANK_JSON_PATH }} #option
                   MARKDOWN_PATH: ${{ inputs.MARKDOWN_PATH }} #option
                   DISPLAY_CONTRIBUTOR_COUNTS: ${{ inputs.DISPLAY_CONTRIBUTOR_COUNTS }} #option

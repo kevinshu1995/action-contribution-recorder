@@ -22374,7 +22374,7 @@ FetchError.prototype.name = 'FetchError';
 
 let convert;
 try {
-	convert = (__nccwpck_require__(2877).convert);
+	convert = (__nccwpck_require__(2319).convert);
 } catch (e) {}
 
 const INTERNALS = Symbol('Body internals');
@@ -27212,167 +27212,170 @@ function wrappy (fn, cb) {
 /***/ 4174:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-// const core = require("@actions/core");
+const core = __nccwpck_require__(2186);
 (__nccwpck_require__(2437).config)();
 
 const github = __nccwpck_require__(5438);
 // const dayjs = require("dayjs");
 
-const {
-    GITHUB_TOKEN,
-    GITHUB_REPOSITORY,
-    // RECORD_DAY_RANGE,
-    DEBUG_GITHUB_REST,
-} = process.env;
-const [owner, repo] = GITHUB_REPOSITORY.split("/");
-
-const originOctokit = github.getOctokit(GITHUB_TOKEN);
-const octokit = github.getOctokit(GITHUB_TOKEN);
-
-if (DEBUG_GITHUB_REST && DEBUG_GITHUB_REST === "1") {
-    originOctokit.hook.after("request", async (response, options) => {
-        console.log({
-            request: `${options.method} ${options.url}: ${response.status}`,
-            "x-ratelimit-remaining": response.headers["x-ratelimit-remaining"],
-            // response,
-        });
-    });
-
-    octokit.hook.after("request", async (response, options) => {
-        console.log({
-            request: `${options.method} ${options.url}: ${response.status}`,
-            "x-ratelimit-remaining": response.headers["x-ratelimit-remaining"],
-            // response,
-        });
-    });
-}
-
-// const since = dayjs().subtract(RECORD_DAY_RANGE, "day").toISOString();
-
-octokit.hook.wrap("request", async (request, options) => {
+const Github = (() => {
     try {
-        const response = await request(options);
+        // const { GH_TOKEN, GH_REPOSITORY } = process.env;
+        const GH_TOKEN = core.getInput("GH_TOKEN");
+        const GH_REPOSITORY = core.getInput("GH_REPOSITORY");
+
+        const { DEBUG_GITHUB_REST } = process.env;
+        const [owner, repo] = GH_REPOSITORY.split("/");
+
+        const originOctokit = github.getOctokit(GH_TOKEN);
+        const octokit = github.getOctokit(GH_TOKEN);
+
+        if (DEBUG_GITHUB_REST && DEBUG_GITHUB_REST === "1") {
+            originOctokit.hook.after("request", async (response, options) => {
+                console.log({
+                    request: `${options.method} ${options.url}: ${response.status}`,
+                    "x-ratelimit-remaining": response.headers["x-ratelimit-remaining"],
+                    // response,
+                });
+            });
+
+            octokit.hook.after("request", async (response, options) => {
+                console.log({
+                    request: `${options.method} ${options.url}: ${response.status}`,
+                    "x-ratelimit-remaining": response.headers["x-ratelimit-remaining"],
+                    // response,
+                });
+            });
+        }
+
+        // const since = dayjs().subtract(RECORD_DAY_RANGE, "day").toISOString();
+
+        octokit.hook.wrap("request", async (request, options) => {
+            try {
+                const response = await request(options);
+                return {
+                    data: response.data,
+                    error: null,
+                };
+            } catch (error) {
+                return {
+                    data: null,
+                    error,
+                };
+            }
+        });
         return {
-            data: response.data,
-            error: null,
+            pulls: {
+                // Get a pull request
+                // INFO Lists details of a pull request by providing its number.
+                get({ pull_number }) {
+                    return octokit.rest.pulls.get({
+                        owner,
+                        repo,
+                        pull_number,
+                    });
+                },
+                // List pull requests
+                // INFO Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see GitHub's products in the GitHub Help documentation.
+                async list(options) {
+                    const { state } = { state: "all", ...options };
+                    const response = await originOctokit.paginate(originOctokit.rest.pulls.list, {
+                        owner,
+                        repo,
+                        state,
+                        per_page: 100,
+                    });
+
+                    return {
+                        data: response,
+                        error: null,
+                    };
+                },
+                // Get a review for a pull request
+                getReview({ pull_number, comment_id }) {
+                    return octokit.rest.pulls.getReview({
+                        owner,
+                        repo,
+                        pull_number,
+                        comment_id,
+                    });
+                },
+                // Get a review comment for a pull request
+                // INFO Provides details for a review comment.
+                getReviewComment({ comment_id }) {
+                    return octokit.rest.pulls.getReviewComment({
+                        owner,
+                        repo,
+                        comment_id,
+                    });
+                },
+                // List comments for a pull request review
+                // INFO List comments for a specific pull request review.
+                async listCommentsForReview({ pull_number, review_id }) {
+                    const response = await originOctokit.paginate(originOctokit.rest.pulls.listCommentsForReview, {
+                        owner,
+                        repo,
+                        per_page: 100,
+                        pull_number,
+                        review_id,
+                    });
+
+                    return {
+                        data: response,
+                        error: null,
+                    };
+                },
+                // List review comments on a pull request
+                // INFO Lists all review comments for a pull request. By default, review comments are in ascending order by ID.
+                async listReviewComments({ pull_number }) {
+                    const response = await originOctokit.paginate(originOctokit.rest.pulls.listReviewComments, {
+                        owner,
+                        repo,
+                        per_page: 100,
+                        pull_number,
+                    });
+
+                    return {
+                        data: response,
+                        error: null,
+                    };
+                },
+                // List review comments in a repository
+                // INFO Lists review comments for all pull requests in a repository. By default, review comments are in ascending order by ID.
+                async listReviewCommentsForRepo() {
+                    const response = await originOctokit.paginate(originOctokit.rest.pulls.listReviewCommentsForRepo, {
+                        owner,
+                        repo,
+                        per_page: 100,
+                        // since,
+                    });
+
+                    return {
+                        data: response,
+                        error: null,
+                    };
+                },
+                // List reviews for a pull request
+                // INFO The list of reviews returns in chronological order.
+                async listReviews({ pull_number }) {
+                    const response = await originOctokit.paginate(originOctokit.rest.pulls.listReviews, {
+                        owner,
+                        repo,
+                        per_page: 100,
+                        pull_number,
+                    });
+
+                    return {
+                        data: response,
+                        error: null,
+                    };
+                },
+            },
         };
     } catch (error) {
-        return {
-            data: null,
-            error,
-        };
+        console.error(error);
+        throw new Error(error);
     }
-});
-
-const Github = (() => {
-    return {
-        pulls: {
-            // Get a pull request
-            // INFO Lists details of a pull request by providing its number.
-            get({ pull_number }) {
-                return octokit.rest.pulls.get({
-                    owner,
-                    repo,
-                    pull_number,
-                });
-            },
-            // List pull requests
-            // INFO Draft pull requests are available in public repositories with GitHub Free and GitHub Free for organizations, GitHub Pro, and legacy per-repository billing plans, and in public and private repositories with GitHub Team and GitHub Enterprise Cloud. For more information, see GitHub's products in the GitHub Help documentation.
-            async list(options) {
-                const { state } = { state: "all", ...options };
-                const response = await originOctokit.paginate(originOctokit.rest.pulls.list, {
-                    owner,
-                    repo,
-                    state,
-                    per_page: 100,
-                });
-
-                return {
-                    data: response,
-                    error: null,
-                };
-            },
-            // Get a review for a pull request
-            getReview({ pull_number, comment_id }) {
-                return octokit.rest.pulls.getReview({
-                    owner,
-                    repo,
-                    pull_number,
-                    comment_id,
-                });
-            },
-            // Get a review comment for a pull request
-            // INFO Provides details for a review comment.
-            getReviewComment({ comment_id }) {
-                return octokit.rest.pulls.getReviewComment({
-                    owner,
-                    repo,
-                    comment_id,
-                });
-            },
-            // List comments for a pull request review
-            // INFO List comments for a specific pull request review.
-            async listCommentsForReview({ pull_number, review_id }) {
-                const response = await originOctokit.paginate(originOctokit.rest.pulls.listCommentsForReview, {
-                    owner,
-                    repo,
-                    per_page: 100,
-                    pull_number,
-                    review_id,
-                });
-
-                return {
-                    data: response,
-                    error: null,
-                };
-            },
-            // List review comments on a pull request
-            // INFO Lists all review comments for a pull request. By default, review comments are in ascending order by ID.
-            async listReviewComments({ pull_number }) {
-                const response = await originOctokit.paginate(originOctokit.rest.pulls.listReviewComments, {
-                    owner,
-                    repo,
-                    per_page: 100,
-                    pull_number,
-                });
-
-                return {
-                    data: response,
-                    error: null,
-                };
-            },
-            // List review comments in a repository
-            // INFO Lists review comments for all pull requests in a repository. By default, review comments are in ascending order by ID.
-            async listReviewCommentsForRepo() {
-                const response = await originOctokit.paginate(originOctokit.rest.pulls.listReviewCommentsForRepo, {
-                    owner,
-                    repo,
-                    per_page: 100,
-                    // since,
-                });
-
-                return {
-                    data: response,
-                    error: null,
-                };
-            },
-            // List reviews for a pull request
-            // INFO The list of reviews returns in chronological order.
-            async listReviews({ pull_number }) {
-                const response = await originOctokit.paginate(originOctokit.rest.pulls.listReviews, {
-                    owner,
-                    repo,
-                    per_page: 100,
-                    pull_number,
-                });
-
-                return {
-                    data: response,
-                    error: null,
-                };
-            },
-        },
-    };
 })();
 
 module.exports = Github;
@@ -27885,6 +27888,86 @@ module.exports = UserMap;
 
 /***/ }),
 
+/***/ 2877:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const { spawn, execSync } = __nccwpck_require__(2081);
+const core = __nccwpck_require__(2186);
+
+const exec = (cmd, args = [], options = {}) => {
+    return new Promise((resolve, reject) => {
+        let outputData = "";
+        const optionsToCLI = {
+            ...options,
+        };
+        if (!optionsToCLI.stdio) {
+            Object.assign(optionsToCLI, { stdio: ["inherit", "inherit", "inherit"] });
+        }
+        const app = spawn(cmd, args, optionsToCLI);
+        if (app.stdout) {
+            // Only needed for pipes
+            app.stdout.on("data", function (data) {
+                outputData += data.toString();
+            });
+        }
+
+        app.on("close", code => {
+            if (code !== 0) {
+                return reject({ code, outputData });
+            }
+            return resolve({ code, outputData });
+        });
+        app.on("error", () => reject({ code: 1, outputData }));
+    });
+};
+
+function isGitDirty() {
+    const command = `git diff HEAD^ HEAD --name-only`;
+    const diffOutput = execSync(command).toString();
+    return diffOutput !== "";
+}
+
+async function commitAllChanges(githubToken) {
+    // Getting config
+
+    // const { COMMITTER_USERNAME, COMMITTER_EMAIL, COMMIT_MESSAGE, GH_REPOSITORY, BRANCH } = process.env;
+    const COMMITTER_USERNAME = core.getInput("COMMITTER_USERNAME");
+    const COMMITTER_EMAIL = core.getInput("COMMITTER_EMAIL");
+    const COMMIT_MESSAGE = core.getInput("COMMIT_MESSAGE");
+    const GH_REPOSITORY = core.getInput("GH_REPOSITORY");
+    const BRANCH = core.getInput("BRANCH");
+
+    // Doing commit and push
+    if (COMMITTER_EMAIL) {
+        await exec("git", ["config", "--global", "user.email", COMMITTER_EMAIL]);
+    }
+    if (githubToken) {
+        // git remote set-url origin
+        await exec("git", ["remote", "set-url", "origin", `https://${githubToken}@github.com/${GH_REPOSITORY}.git`]);
+    }
+    await exec("git", ["config", "--global", "user.name", COMMITTER_USERNAME]);
+    await exec("git", ["add", "."]);
+    await exec("git", ["commit", "-m", COMMIT_MESSAGE]);
+    await exec("git", ["push"]);
+    core.info("Changes updated successfully in the upstream repository");
+}
+
+async function commitAllChangesIfDirty(githubToken) {
+    if (isGitDirty()) {
+        await commitAllChanges(githubToken);
+    } else {
+        core.info("No changes to commit");
+    }
+}
+
+module.exports = {
+    commitAllChangesIfDirty,
+};
+
+
+
+/***/ }),
+
 /***/ 8930:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -27973,7 +28056,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 2877:
+/***/ 2319:
 /***/ ((module) => {
 
 module.exports = eval("require")("encoding");
@@ -27986,6 +28069,14 @@ module.exports = eval("require")("encoding");
 
 "use strict";
 module.exports = require("assert");
+
+/***/ }),
+
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 
@@ -28172,15 +28263,26 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(2186);
 const Utils = __nccwpck_require__(8930);
+const Commit = __nccwpck_require__(2877);
 const jsonToMdTable = __nccwpck_require__(7401);
 const dayjs = __nccwpck_require__(478);
 const utc = __nccwpck_require__(4359);
 const LeaderBoard = __nccwpck_require__(739);
-(__nccwpck_require__(2437).config)();
+// require("dotenv").config();
 
 dayjs.extend(utc);
 
-const { RANK_JSON_PATH = "./contributor-leader-board.json", MARKDOWN_PATH = "./README.md", DISPLAY_CONTRIBUTOR_COUNTS = 10, MARKDOWN_INSERT_KEY = "CONTRIBUTION-LEADER-BOARD-TABLE" } = process.env;
+// const {
+//     RANK_JSON_PATH = "./contributor-leader-board.json",
+//     MARKDOWN_PATH = "./README.md",
+//     DISPLAY_CONTRIBUTOR_COUNTS = 10,
+//     MARKDOWN_INSERT_KEY = "CONTRIBUTION-LEADER-BOARD-TABLE",
+// } = process.env;
+
+const RANK_JSON_PATH = core.getInput("RANK_JSON_PATH");
+const MARKDOWN_PATH = core.getInput("MARKDOWN_PATH");
+const DISPLAY_CONTRIBUTOR_COUNTS = core.getInput("DISPLAY_CONTRIBUTOR_COUNTS");
+const MARKDOWN_INSERT_KEY = core.getInput("MARKDOWN_INSERT_KEY");
 
 // utility function
 const stringTag = options => {
@@ -28202,7 +28304,9 @@ async function getLeaderBoard() {
     await leaderBoard.init();
     const lastUpdateTime = leaderBoard.Rank.lastUpdateTime;
     if (lastUpdateTime === null) {
-        core.info(`Because the ${RANK_JSON_PATH} file does not exist, it is not possible to compare past rankings, so everyone's last rank is displayed as '-'`);
+        core.info(
+            `Because the ${RANK_JSON_PATH} file does not exist, it is not possible to compare past rankings, so everyone's last rank is displayed as '-'`
+        );
     }
 
     return {
@@ -28232,7 +28336,9 @@ function generateMDTable({ leaderBoard, lastUpdateTime }) {
 
                 return "New Contributor!";
             })();
-            const name = `${stringTag({ tag: "img", attrs: { width: "30px", src: data.info.avatar_url, alt: data.info.login } })} [${data.info.login}](${data.info.html_url})`;
+            const name = `${stringTag({ tag: "img", attrs: { width: "30px", src: data.info.avatar_url, alt: data.info.login } })} [${
+                data.info.login
+            }](${data.info.html_url})`;
             return {
                 Rank: rank,
                 Name: name,
@@ -28248,7 +28354,11 @@ function generateMDTable({ leaderBoard, lastUpdateTime }) {
 
 function writeMD({ leaderBoardMd }) {
     const currentReadme = Utils.markdown.read(MARKDOWN_PATH);
-    const newReadme = Utils.markdown.insert(currentReadme, leaderBoardMd + `\nUpdate Time: ${dayjs().utc().format("YYYY/MM/DD HH:mm:ss ZZ")}`, MARKDOWN_INSERT_KEY);
+    const newReadme = Utils.markdown.insert(
+        currentReadme,
+        leaderBoardMd + `\nUpdate Time: ${dayjs().utc().format("YYYY/MM/DD HH:mm:ss ZZ")}`,
+        MARKDOWN_INSERT_KEY
+    );
     if (newReadme !== currentReadme) {
         core.info("Writing to " + MARKDOWN_PATH);
         Utils.markdown.write(MARKDOWN_PATH, newReadme);
@@ -28269,6 +28379,8 @@ async function main() {
 
         // Write markdown
         writeMD({ leaderBoardMd });
+
+        await Commit.commitAllChangesIfDirty();
     } catch (error) {
         core.setFailed("[main] " + error.message);
         console.error(error);
