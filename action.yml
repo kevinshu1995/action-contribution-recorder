@@ -26,7 +26,7 @@ inputs:
     RANK_JSON_PATH:
         description: "json file path"
         required: false
-        default: "./contributor-leader-board.json"
+        default: "./.github/contributor-leader-board.json"
     MARKDOWN_PATH:
         description: "markdown file path"
         required: false
