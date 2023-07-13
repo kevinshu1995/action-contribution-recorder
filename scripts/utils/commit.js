@@ -1,5 +1,6 @@
 const { spawn, execSync } = require("child_process");
 const core = require("@actions/core");
+const envValidation = require("./envValidation.js");
 
 const exec = (cmd, args = [], options = {}) => {
     return new Promise((resolve, reject) => {
@@ -60,11 +61,7 @@ async function commitAllChanges(githubToken) {
 }
 
 async function commitAllChangesIfDirty(githubToken) {
-    const IS_SKIP_COMMITTING = core.getInput("IS_SKIP_COMMITTING");
-    if (["true", true, 1].includes(IS_SKIP_COMMITTING)) {
-        core.info("Skip committing");
-        return;
-    }
+    if (envValidation.isSkippingCommitting()) return;
 
     if (isGitDirty()) {
         await commitAllChanges(githubToken);

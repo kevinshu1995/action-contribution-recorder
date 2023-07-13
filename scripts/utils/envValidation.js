@@ -9,7 +9,17 @@ function isSkippingWritingFiles(path) {
     return false;
 }
 
+function isSkippingCommitting() {
+    const IS_SKIPPING_COMMITTING = core.getInput("IS_SKIPPING_COMMITTING");
+    if (["true", true, 1].includes(IS_SKIPPING_COMMITTING)) {
+        core.info(`| 🟢 INFO | Skipping committing \n`);
+        return true;
+    }
+    return false;
+}
+
 module.exports = {
     isSkippingWritingFiles,
+    isSkippingCommitting,
 };
 
