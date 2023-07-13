@@ -37,13 +37,10 @@ function isGitDirty() {
 
 async function commitAllChanges(githubToken) {
     // Getting config
-
-    // const { COMMITTER_USERNAME, COMMITTER_EMAIL, COMMIT_MESSAGE, GH_REPOSITORY, BRANCH } = process.env;
     const COMMITTER_USERNAME = core.getInput("COMMITTER_USERNAME");
     const COMMITTER_EMAIL = core.getInput("COMMITTER_EMAIL");
     const COMMIT_MESSAGE = core.getInput("COMMIT_MESSAGE");
     const GH_REPOSITORY = core.getInput("GH_REPOSITORY");
-    const BRANCH = core.getInput("BRANCH");
 
     // Doing commit and push
     if (COMMITTER_EMAIL) {
