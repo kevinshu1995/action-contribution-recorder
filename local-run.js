@@ -2,8 +2,12 @@ const yaml = require("js-yaml");
 const fs = require("fs");
 require("dotenv").config();
 
-try {
-    const { inputs } = yaml.load(fs.readFileSync("./action.yml", "utf8"));
+function loadAction() {
+    return yaml.load(fs.readFileSync("./action.yml", "utf8"));
+}
+
+function injectInputs() {
+    const { inputs } = loadAction();
 
     // Setup inputs
     console.group("local-run.js - env");
@@ -30,9 +34,18 @@ try {
     };
     console.groupEnd("local-run.js - env");
     console.log("\n");
+}
+
+try {
+    injectInputs();
 
     require("./index.js");
 } catch (e) {
     console.error(e);
 }
+
+module.exports = {
+    injectInputs,
+    loadAction,
+};
 
