@@ -2,12 +2,8 @@ const core = require("@actions/core");
 const Utils = require("./scripts/utils/index.js");
 const Commit = require("./scripts/utils/commit.js");
 const jsonToMdTable = require("json-to-markdown-table");
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
 const LeaderBoard = require("./scripts/leaderBoard/index.js");
 // require("dotenv").config();
-
-dayjs.extend(utc);
 
 // const {
 //     RANK_JSON_PATH = "./contributor-leader-board.json",
@@ -93,7 +89,7 @@ function writeMD({ leaderBoardMd }) {
     const currentReadme = Utils.markdown.read(MARKDOWN_PATH);
     const newReadme = Utils.markdown.insert(
         currentReadme,
-        leaderBoardMd + `\nUpdate Time: ${dayjs().utc().format("YYYY/MM/DD HH:mm:ss ZZ")}`,
+        leaderBoardMd + `\nUpdate Time: ${Utils.dayJs().utc().format("YYYY/MM/DD HH:mm:ss ZZ")}`,
         MARKDOWN_INSERT_KEY
     );
     if (newReadme !== currentReadme) {
