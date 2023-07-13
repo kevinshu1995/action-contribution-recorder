@@ -18,9 +18,10 @@
         "GitHub",
         "Actions",
         "JavaScript",
-        "Contribution"
+        "Contribution",
+        "LeaderBoard"
     ],
-    "author": "",
+    "author": "Kevin Hsu",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/actions/action-contribution-recorder/issues"
