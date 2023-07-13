@@ -1,5 +1,6 @@
 const fs = require("fs");
 const core = require("@actions/core");
+const envValidation = require("./envValidation.js");
 
 function read(path) {
     try {
@@ -12,6 +13,7 @@ function read(path) {
 }
 
 function write(path, data) {
+    if (envValidation.isSkippingWritingFiles(path)) return false;
     try {
         fs.writeFileSync(path, JSON.stringify(data, null, 2));
         return true;

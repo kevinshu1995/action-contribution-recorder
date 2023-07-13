@@ -1,5 +1,6 @@
 const core = require("@actions/core");
 const fs = require("fs");
+const envValidation = require("./envValidation.js");
 
 const insert = (previousContent, newContent, key = "insert-key") => {
     const tagToLookFor = `<!--${key}:`;
@@ -12,7 +13,13 @@ const insert = (previousContent, newContent, key = "insert-key") => {
         core.error(`Cannot find the comment tag on the readme:\n${tagToLookFor}START -->\n${tagToLookFor}END -->`);
         process.exit(1);
     }
-    return [previousContent.slice(0, endOfOpeningTagIndex + closingTag.length), "\n", newContent, "\n", previousContent.slice(startOfClosingTagIndex)].join("");
+    return [
+        previousContent.slice(0, endOfOpeningTagIndex + closingTag.length),
+        "\n",
+        newContent,
+        "\n",
+        previousContent.slice(startOfClosingTagIndex),
+    ].join("");
 };
 
 const read = path => {
@@ -20,6 +27,7 @@ const read = path => {
 };
 
 const write = (path, newContent) => {
+    if (envValidation.isSkippingWritingFiles(path)) return;
     return fs.writeFileSync(path, newContent);
 };
 
