@@ -21,5 +21,75 @@ describe("Environment variable", () => {
             );
         });
     });
+
+    describe("GH_REPOSITORY", () => {
+        it("should be exist", () => {
+            injectInputs();
+            expect(core.getInput("GH_REPOSITORY")).not.toBeUndefined();
+        });
+    });
+
+    describe("COMMITTER_USERNAME", () => {
+        it("should be exist", () => {
+            injectInputs();
+            expect(core.getInput("COMMITTER_USERNAME")).not.toBeUndefined();
+        });
+    });
+
+    describe("COMMITTER_EMAIL", () => {
+        it("should be exist", () => {
+            injectInputs();
+            expect(core.getInput("COMMITTER_EMAIL")).not.toBeUndefined();
+        });
+    });
+
+    describe("COMMIT_MESSAGE", () => {
+        it("should be exist", () => {
+            injectInputs();
+            expect(core.getInput("COMMIT_MESSAGE")).not.toBeUndefined();
+        });
+    });
+
+    describe("RANK_JSON_PATH", () => {
+        it("should be exist", () => {
+            injectInputs();
+            expect(core.getInput("RANK_JSON_PATH")).not.toBeUndefined();
+        });
+    });
+
+    describe("MARKDOWN_PATH", () => {
+        it("should be exist", () => {
+            injectInputs();
+            expect(core.getInput("MARKDOWN_PATH")).not.toBeUndefined();
+        });
+    });
+
+    describe("DISPLAY_CONTRIBUTOR_COUNTS", () => {
+        it("should be exist", () => {
+            injectInputs();
+            expect(core.getInput("DISPLAY_CONTRIBUTOR_COUNTS")).not.toBeUndefined();
+        });
+    });
+
+    describe("MARKDOWN_INSERT_KEY", () => {
+        it("should be exist", () => {
+            injectInputs();
+            expect(core.getInput("MARKDOWN_INSERT_KEY")).not.toBeUndefined();
+        });
+    });
+
+    describe("IS_SKIPPING_COMMITTING", () => {
+        it("should be exist", () => {
+            injectInputs();
+            expect(core.getInput("IS_SKIPPING_COMMITTING")).not.toBeUndefined();
+        });
+    });
+
+    describe("IS_SKIPPING_WRITING_FILES", () => {
+        it("should be exist", () => {
+            injectInputs();
+            expect(core.getInput("IS_SKIPPING_WRITING_FILES")).not.toBeUndefined();
+        });
+    });
 });
 
