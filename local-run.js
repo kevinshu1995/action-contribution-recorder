@@ -1,5 +1,6 @@
 const yaml = require("js-yaml");
 const fs = require("fs");
+const { envValidation } = require("./scripts/utils");
 require("dotenv").config();
 
 function loadAction() {
@@ -36,12 +37,14 @@ function injectInputs() {
     console.log("\n");
 }
 
-try {
-    injectInputs();
+if (envValidation.isTestingMode() === false) {
+    try {
+        injectInputs();
 
-    require("./index.js");
-} catch (e) {
-    console.error(e);
+        require("./index.js");
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 module.exports = {
