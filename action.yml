@@ -43,6 +43,10 @@ inputs:
         description: "skip committing"
         required: false
         default: "false"
+    IS_SKIPPING_WRITING_FILES:
+        description: "skip writing files"
+        required: false
+        default: "false"
 
 runs:
     using: node16
