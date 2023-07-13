@@ -39,6 +39,10 @@ inputs:
         description: "markdown insert key"
         required: false
         default: "CONTRIBUTION-LEADER-BOARD-TABLE"
+    IS_SKIP_COMMITTING:
+        description: "skip committing"
+        required: false
+        default: "false"
 
 runs:
     using: node16

@@ -60,11 +60,18 @@ async function commitAllChanges(githubToken) {
 }
 
 async function commitAllChangesIfDirty(githubToken) {
+    const IS_SKIP_COMMITTING = core.getInput("IS_SKIP_COMMITTING");
+    if (["true", true, 1].includes(IS_SKIP_COMMITTING)) {
+        core.info("Skip committing");
+        return;
+    }
+
     if (isGitDirty()) {
         await commitAllChanges(githubToken);
-    } else {
-        core.info("No changes to commit");
+        return;
     }
+
+    core.info("No changes to commit");
 }
 
 module.exports = {
