@@ -23,8 +23,13 @@ function isSkippingCommitting() {
     return false;
 }
 
+function isTestingMode() {
+    return process.env.NODE_ENV === "test";
+}
+
 module.exports = {
     isSkippingWritingFiles,
     isSkippingCommitting,
+    isTestingMode,
 };
 
