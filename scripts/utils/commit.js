@@ -44,13 +44,13 @@ async function commitAllChanges(githubToken) {
 
     // Doing commit and push
     if (COMMITTER_EMAIL) {
-        await exec("git", ["config", "--global", "user.email", COMMITTER_EMAIL]);
+        await exec("git", ["config", "user.email", COMMITTER_EMAIL]);
     }
     if (githubToken) {
         // git remote set-url origin
         await exec("git", ["remote", "set-url", "origin", `https://${githubToken}@github.com/${GH_REPOSITORY}.git`]);
     }
-    await exec("git", ["config", "--global", "user.name", COMMITTER_USERNAME]);
+    await exec("git", ["config", "user.name", COMMITTER_USERNAME]);
     await exec("git", ["add", "."]);
     await exec("git", ["commit", "-m", COMMIT_MESSAGE]);
     await exec("git", ["push"]);
