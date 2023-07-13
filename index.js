@@ -38,7 +38,7 @@ async function getLeaderBoard() {
     const lastUpdateTime = leaderBoard.Rank.lastUpdateTime;
     if (lastUpdateTime === null) {
         core.info(
-            `Because the ${RANK_JSON_PATH} file does not exist, it is not possible to compare past rankings, so everyone's last rank is displayed as '-'`
+            `| 🟢 INFO | writing contributor's last rank \n\t Because the ${RANK_JSON_PATH} file does not exist, it is not possible to compare past rankings, so everyone's last rank is displayed as '-' \n`
         );
     }
 
