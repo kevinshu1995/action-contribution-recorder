@@ -29,7 +29,11 @@ function injectInputs() {
                 return obj;
             }
 
-            console.error(`| 🟡 ${key} : \n|\t does not have a default value and is not set in the environment`);
+            if (inputs[key].required === true) {
+                console.error(`| 🟡 ${key} : \n|\t is a required input.`);
+            } else {
+                console.log(`| 🟡 ${key} : \n|\t does not have a default value and is not set in the environment`);
+            }
             return obj;
         }, {}),
     };
