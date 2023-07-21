@@ -28350,6 +28350,7 @@ const RANK_JSON_PATH = core.getInput("RANK_JSON_PATH");
 const MARKDOWN_PATH = core.getInput("MARKDOWN_PATH");
 const DISPLAY_CONTRIBUTOR_COUNTS = core.getInput("DISPLAY_CONTRIBUTOR_COUNTS");
 const MARKDOWN_INSERT_KEY = core.getInput("MARKDOWN_INSERT_KEY");
+const LEADER_BOARD_EMPTY_MESSAGE = core.getInput("LEADER_BOARD_EMPTY_MESSAGE");
 
 // utility function
 const stringTag = options => {
@@ -28383,9 +28384,15 @@ async function getLeaderBoard() {
 }
 
 function generateMDTable({ leaderBoard, lastUpdateTime }) {
+    const topLeaderAry = leaderBoard.getLeaders(DISPLAY_CONTRIBUTOR_COUNTS);
+
+    if (topLeaderAry.length !== 0) {
+        return { leaderBoardMd: LEADER_BOARD_EMPTY_MESSAGE + "\r\n\r\n" };
+    }
+
     const leaderBoardMd = jsonToMdTable(
         // get top X contributors
-        leaderBoard.getLeaders(DISPLAY_CONTRIBUTOR_COUNTS).map((data, index) => {
+        topLeaderAry.map((data, index) => {
             const rank = index + 1;
             const lastRank = (() => {
                 if (lastUpdateTime === null) return "-";
