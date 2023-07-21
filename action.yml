@@ -37,6 +37,10 @@ inputs:
         description: "markdown insert key"
         required: false
         default: "CONTRIBUTION-LEADER-BOARD-TABLE"
+    LEADER_BOARD_EMPTY_MESSAGE:
+        description: "message display while leader board is empty"
+        required: false
+        default: "No contributors found!"
     IS_SKIPPING_COMMITTING:
         description: "skip committing"
         required: false
