@@ -90,7 +90,7 @@ jobs:
               with:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   GH_REPOSITORY: ${{ github.repository }}
-                  RANK_JSON_PATH: ./contributor-leader-board.json #option
+                  RANK_JSON_PATH: ./.github/contributor-leader-board.json #option
                   MARKDOWN_PATH: ./README.md #option
                   DISPLAY_CONTRIBUTOR_COUNTS: "10" #option
                   MARKDOWN_INSERT_KEY: CONTRIBUTION-LEADER-BOARD-TABLE #option
